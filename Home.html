@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro - RAMA</title>
+    <link rel="stylesheet" href="styleshome.css">
+    <script src="JS/node.js" defer></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Cadastro de Usuário</h2>
+        <form action="PHP/home.php" method="POST" onsubmit="return validarFormulario()">
+            <label>Nome Completo:</label>
+            <input type="text" name="nome" required>
+
+            <label>Email:</label>
+            <input type="email" name="email" required>
+
+            <label>Cargo:</label>
+            <div class="checkbox-group">
+                <label><input type="checkbox" name="cargo" value="Gerente"> Gerente</label>
+                <label><input type="checkbox" name="cargo" value="Funcionário"> Funcionário</label>
+            </div>
+
+            <label>Senha:</label>
+            <input type="password" name="senha" id="senha" required>
+
+            <label>Confirmar Senha:</label>
+            <input type="password" name="confirmar_senha" id="confirmar_senha" required>
+
+            <button type="submit">Cadastrar</button>
+        </form>
+    </div>
+</body>
+
+</html>
