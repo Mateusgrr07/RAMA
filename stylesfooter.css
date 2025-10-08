@@ -1,0 +1,9 @@
+.footer {
+  background-color: #0d4422;
+  display: flex;
+  justify-content: center;
+}
+
+.footer-logo {
+  height: 110px;
+}

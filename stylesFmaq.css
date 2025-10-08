@@ -101,13 +101,3 @@ body {
       .hero-blank {width: 100%; margin-top: 20px;}
       .cards {flex-direction: column;}
     }
-
-      .footer {
-  background-color: #0d4422;
-  display: flex;
-  justify-content: center;
-}
-
-.footer-logo {
-  height: 110px;
-}
