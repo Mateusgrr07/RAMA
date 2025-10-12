@@ -2,34 +2,28 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "rama";
+$dbname = "rama_db";
 
-// Criar conexão 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
-// Checar conexão
 if ($conn->connect_error) {
     die("Erro na conexão: " . $conn->connect_error);
 }
 
-// Pegar dados do formulário
 $nome = $_POST['nome'];
 $email = $_POST['email'];
 $cargo = $_POST['cargo'];
-$senha = $_POST['senha'];
+$setor = isset($_POST['setor']) ? $_POST['setor'] : "";
+$senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
 
-// Criptografar senha 
-$senhaHash = password_hash($senha, PASSWORD_DEFAULT);
-
-// Inserir no banco 
-$sql = "INSERT INTO usuarios (nome, email, cargo, senha) 
-        VALUES ('$nome', '$email', '$cargo', '$senhaHash')";
+$sql = "INSERT INTO usuarios (nome, email, cargo, setor, senha)
+        VALUES ('$nome', '$email', '$cargo', '$setor', '$senha')";
 
 if ($conn->query($sql) === TRUE) {
-    echo "Usuário cadastrado com sucesso!";
+    header("Location: Login.html"); // redireciona direto pro login
+    exit();
 } else {
     echo "Erro: " . $conn->error;
 }
 
 $conn->close();
-?>

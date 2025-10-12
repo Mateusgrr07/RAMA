@@ -5,37 +5,43 @@
     <meta charset="UTF-8">
     <title>Cadastro - RAMA</title>
     <link rel="stylesheet" href="styleshome.css">
-    <script src="JS/node.js" defer></script>
 </head>
 
 <body>
     <div class="container">
-        <h2>Cadastro de Usuário</h2>
-        <form action="PHP/home.php" method="POST" onsubmit="return validarFormulario()">
-            <label>Nome Completo:</label>
+        <h2>Cadastro</h2>
+        <form action="home.php" method="POST" onsubmit="return validarFormulario()">
+
+            <label>Nome completo:</label>
             <input type="text" name="nome" required>
 
             <label>Email:</label>
             <input type="email" name="email" required>
 
-            <label>Cargo:</label>
-            <div class="checkbox-group">
-                <label><input type="checkbox" name="cargo" value="Gerente"> Gerente</label>
-                <label><input type="checkbox" name="cargo" value="Funcionário"> Funcionário</label>
+            <label>Cargo:</label><br>
+            <input type="checkbox" id="gerente" name="cargo" value="Gerente" onclick="selecionarCargo(this)"> Gerente
+            <input type="checkbox" id="funcionario" name="cargo" value="Funcionario" onclick="selecionarCargo(this)">
+            Funcionário
+
+            <div id="opcoesFuncionario" style="display:none; margin-top:10px;">
+                <label>Setor:</label><br>
+                <input type="checkbox" name="setor" value="Maquinas" onclick="selecionarSetor(this)"> Máquinas
+                <input type="checkbox" name="setor" value="Caminhoes" onclick="selecionarSetor(this)"> Caminhões
             </div>
 
             <label>Senha:</label>
-            <input type="password" name="senha" id="senha" required>
+            <input type="password" id="senha" name="senha" required>
 
-            <label>Confirmar Senha:</label>
-            <input type="password" name="confirmar_senha" id="confirmar_senha" required>
+            <label>Confirmar senha:</label>
+            <input type="password" id="confirmarSenha" required>
 
             <button type="submit">Cadastrar</button>
         </form>
+
+        <p>Já tem uma conta? <a href="Login.html">Faça login aqui</a></p>
     </div>
+
+    <script src="JS/node.js" defer></script>
 </body>
 
 </html>
-<a href="Gmaq.html">Gerente MAQUINA</a>
-<a href="Gcami.html">Gerente Caminhão</a>
-<a href="Fmaq.html">Trabalhador maquina</a>
