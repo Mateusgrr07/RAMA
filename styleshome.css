@@ -1,10 +1,8 @@
 body {
     font-family: Arial, sans-serif;
     background: #eef2f3;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+    height: 80vh;
+    margin: 0;
 }
 
 .container {
@@ -12,7 +10,10 @@ body {
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    width: 400px;
+    width: 300px;
+    position: fixed;
+    left: 300px;
+    top: 350px;
 }
 
 h2 {
@@ -48,7 +49,7 @@ button {
     color: white;
     border: none;
     border-radius: 8px;
-    margin-top: 15px;
+    margin-top: 30px;
     cursor: pointer;
 }
 
@@ -66,4 +67,46 @@ button:hover {
 
 .container p a:hover {
     background-color: #0bad4f;
+}
+login-image {
+  flex: 1;
+}
+
+.login-image img {
+  width: 100%;
+  border-radius: 10px;
+}
+.fundo {
+  background: url('IMG/7b272f5d-1da7-4e54-8688-274490690507.jpg') no-repeat center center/cover;
+  height: 400px;  
+  justify-content: center;
+  align-items: center;
+  color: rgb(255, 255, 255);
+  text-align: center;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  background: #fff;
+  max-width: 900px;
+  margin: -100px auto 50px;
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.login-form {
+  flex: 1;
+}
+
+.login-image {
+  flex: 1;
+}
+
+.login-image img {
+  width: 100%;
+  border-radius: 10px;
 }
