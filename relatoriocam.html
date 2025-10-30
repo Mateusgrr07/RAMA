@@ -24,54 +24,54 @@
       </select>
 
       <label for="nome">Nome</label>
-      <input type="text" id="nome" name="nome">
+      <input type="text" id="nome" name="nome" required>
 
       <label for="placa">Placa Do Caminhão</label>
-      <input type="text" id="placa" name="placa">
+      <input type="text" id="placa" name="placa" required>
 
       <label for="data">Data</label>
-      <input type="text" id="data" name="data">
+      <input type="date" id="data" name="data" required>
 
       <label for="saida">Cidade de saída</label>
-      <input type="text" id="saida" name="saida">
+      <input type="text" id="saida" name="saida" required>
 
       <label for="chegada">Cidade de chegada</label>
-      <input type="text" id="chegada" name="chegada">
+      <input type="text" id="chegada" name="chegada" required>
 
       <label for="obs">Informações:</label>
-      <textarea id="obs" name="observacoes"></textarea>
+      <textarea id="obs" name="observacoes" rows="5"></textarea>
 
-      <button type="submit" value="Enviar">Salvar</button>
+      <button type="submit">Salvar Relatório</button>
     </form>
   </div>
-  <div id="resultado"></div>
-  <script>
-      
-       document.getElementById('meuFormulario').addEventListener('submit', function(event) {
-            
-
-            const nome = document.getElementById('nome').value;
-            const placa = document.getElementById('placa').value;
-            const data = document.getElementById('data').value;
-            const saida = document.getElementById('saida').value;
-            const chegada = document.getElementById('chegada').value;
-            const obs = document.getElementById('obs').value;
-
-            localStorage.setItem('nome', nome);
-            localStorage.setItem('´placa', placa);
-            localStorage.setItem('data', data);
-            localStorage.setItem('saida', saida);
-            localStorage.setItem('chegada', chegada);
-            localStorage.setItem('obs', obs);
-            
-        });
-    </script>
-
-  
   <br>
   <br>
   <footer class="footer">
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
   </footer>
+
+  <script>
+    document.getElementById("relatoriocam").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const relatorio = {
+        tipo: document.getElementById("tipo").value,
+        nome: document.getElementById("nome").value,
+        placa: document.getElementById("placa").value,
+        data: document.getElementById("data").value,
+        saida: document.getElementById("saida").value,
+        chegada: document.getElementById("chegada").value,
+        observacoes: document.getElementById("obs").value
+      };
+
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosTransgraos")) || [];
+      relatorios.push(relatorio);
+      localStorage.setItem("relatoriosTransgraos", JSON.stringify(relatorios));
+
+      alert("✅ Relatório salvo com sucesso!");
+      document.getElementById("relatoriocam").reset();
+    });
+  </script>
 </body>
 </html>
+

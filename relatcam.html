@@ -1,39 +1,94 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="relatcam.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatórios Salvos - TransGrãos</title>
+  <link rel="stylesheet" href="relatorio.css">
+  <link rel="stylesheet" href="stylesfooter.css">
+  <style>
+    /* estilo simples para os botões de exclusão */
+    .btn-excluir {
+      background-color: #d9534f;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .btn-excluir:hover {
+      background-color: #c9302c;
+    }
+    .relatorio-item {
+      background-color: #f9f9f9;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+  </style>
 </head>
 <body>
-    <div id="resultado"></div>
-    
-    <script>
-        const nome = localStorage.getItem('nome');
-        const placa = localStorage.getItem('placa');
-        const data = localStorage.getItem('data');
-        const saida = localStorage.getItem('saida');
-        const chegada = localStorage.getItem('chegada');
-        const obs = localStorage.getItem('obs');
-        
+  <div class="sidebar">
+    <img src="IMG/RamaSemFundo.png" alt="Logo Rama">
+    <a href="Gcami.html">INÍCIO</a>
+    <a href="rastrecam.html">RASTREAMENTO</a>
+    <a href="addcam.html">ADICIONAR CAMINHÃO</a>
+  </div>
 
-        const resultadoDiv = document.getElementById('resultado');
+  <div class="content">
+    <h2>📄 Relatórios Salvos</h2>
+    <div id="listaRelatorios"></div>
+  </div>
 
-        if (nome) {
-            resultadoDiv.innerHTML = `
-                <p>${nome}</p>
-                <p>${placa}</p>
-                <p>${data}</p>
-                <p>${saida}</p>
-                <p>${chegada}</p>
-                <p>${obs}</p>
-            `;
-        } else {
-            resultadoDiv.innerHTML = `<p>Nenhum dado de formulário foi encontrado.</p>`;
-        }
+  <footer class="footer">
+    <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
+  </footer>
 
-    </script>
+  <script>
+    const lista = document.getElementById("listaRelatorios");
 
+    // Função para carregar e exibir os relatórios
+    function carregarRelatorios() {
+      lista.innerHTML = ""; // limpa a tela antes de recarregar
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosTransgraos")) || [];
+
+      if (relatorios.length === 0) {
+        lista.innerHTML = "<p>Nenhum relatório salvo ainda.</p>";
+      } else {
+        relatorios.forEach((r, i) => {
+          const item = document.createElement("div");
+          item.classList.add("relatorio-item");
+          item.innerHTML = `
+            <h3>Relatório ${i + 1}</h3>
+            <p><strong>Tipo:</strong> ${r.tipo}</p>
+            <p><strong>Nome:</strong> ${r.nome}</p>
+            <p><strong>Placa:</strong> ${r.placa}</p>
+            <p><strong>Data:</strong> ${r.data}</p>
+            <p><strong>Saída:</strong> ${r.saida}</p>
+            <p><strong>Chegada:</strong> ${r.chegada}</p>
+            <p><strong>Informações:</strong> ${r.observacoes}</p>
+            <button class="btn-excluir" onclick="excluirRelatorio(${i})">Excluir</button>
+            <hr>
+          `;
+          lista.appendChild(item);
+        });
+      }
+    }
+
+    // Função para excluir um relatório específico
+    function excluirRelatorio(index) {
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosTransgraos")) || [];
+      if (confirm("Tem certeza que deseja excluir este relatório?")) {
+        relatorios.splice(index, 1); // remove o item
+        localStorage.setItem("relatoriosTransgraos", JSON.stringify(relatorios)); // atualiza o storage
+        carregarRelatorios(); // recarrega a lista
+      }
+    }
+
+    // Inicializa a página
+    carregarRelatorios();
+  </script>
 </body>
 </html>
