@@ -17,7 +17,7 @@
   <div class="content">
     <img src="IMG/transgraos.png" alt="TransGrãos" class="logo">
 
-    <form>
+    <form id="manutencaomaq">
       <label for="tipo">Tipo de Relatório</label>
       <select id="tipo" name="tipo">
         <option>Manutenção</option>
@@ -26,7 +26,7 @@
       <label for="nome">Nome</label>
       <input type="text" id="nome" name="nome">
 
-      <label for="cargo">Codigo da Maquina</label>
+      <label for="maquina">Código da Máquina</label>
       <input type="text" id="maquina" name="maquina">
 
       <label for="data">Data da Manutenção</label>
@@ -38,9 +38,29 @@
       <button type="submit">Salvar</button>
     </form>
   </div>
-  <br>
-  <br>
-  
+
+  <script>
+    document.getElementById("manutencaomaq").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const relatorio = {
+        tipo: document.getElementById("tipo").value,
+        nome: document.getElementById("nome").value,
+        maquina: document.getElementById("maquina").value,
+        data: document.getElementById("data").value,
+        observacoes: document.getElementById("obs").value
+      };
+
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosManutencaoMaq")) || [];
+      relatorios.push(relatorio);
+      localStorage.setItem("relatoriosManutencaoMaq", JSON.stringify(relatorios));
+
+      alert("✅ Relatório de manutenção salvo com sucesso!");
+      document.getElementById("manutencaomaq").reset();
+    });
+  </script>
+
+  <footer>
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
   </footer>
 </body>

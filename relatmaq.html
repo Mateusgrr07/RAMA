@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="relatcam.css">
+    <link rel="stylesheet" href="relatorio.css">
+    <link rel="stylesheet" href="stylesfooter.css">
 </head>
 <body>
      <div class="sidebar">
@@ -12,6 +13,59 @@
     <a href="Gmaq.html">INÍCIO</a>
     <a href="addmaq.html">ADICIONAR MAQUINA</a>
     <a href="monitmaq.html">MONITORAMENTO DE MAQUINA</a>
+    <a href="relatoriomanumaq.html">RELATORIOS DE MANUTENÇÃO</a>
   </div>
+  </div>
+
+  <div class="content">
+    <h2>📋 Relatórios Operacionais de Máquinas</h2>
+    <div id="listaRelatorios"></div>
+  </div>
+
+  <script>
+    function carregar() {
+      const lista = document.getElementById("listaRelatorios");
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosOperacionaisMaq")) || [];
+
+      lista.innerHTML = "";
+
+      if (relatorios.length === 0) {
+        lista.innerHTML = "<p>Nenhum relatório salvo ainda.</p>";
+      } else {
+        relatorios.forEach((r, i) => {
+          const item = document.createElement("div");
+          item.classList.add("relatorio-item");
+          item.innerHTML = `
+            <hr>
+            <h3>Relatório ${i + 1}</h3>
+            <p><strong>Tipo:</strong> ${r.tipo}</p>
+            <p><strong>Nome:</strong> ${r.nome}</p>
+            <p><strong>Código da Máquina:</strong> ${r.codigo}</p>
+            <p><strong>Data:</strong> ${r.data}</p>
+            <p><strong>Tempo de Uso:</strong> ${r.tempo}</p>
+            <p><strong>Informações:</strong> ${r.observacoes}</p>
+            <button class="btn-excluir" onclick="excluir(${i})">Excluir</button>
+            <hr>
+          `;
+          lista.appendChild(item);
+        });
+      }
+    }
+
+    function excluir(i) {
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosOperacionaisMaq")) || [];
+      if (confirm("Excluir este relatório?")) {
+        relatorios.splice(i, 1);
+        localStorage.setItem("relatoriosOperacionaisMaq", JSON.stringify(relatorios));
+        carregar();
+      }
+    }
+    carregar();
+  </script>
+  <br>
+  <br>
+   <footer class="footer">
+    <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
+  </footer>
 </body>
 </html>

@@ -3,33 +3,31 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatórios Salvos - TransGrãos</title>
+  <title>Relatórios de Manutenção - TransGrãos</title>
   <link rel="stylesheet" href="relatorio.css">
   <link rel="stylesheet" href="stylesfooter.css">
+  
 </head>
 <body>
   <div class="sidebar">
     <img src="IMG/RamaSemFundo.png" alt="Logo Rama">
-    <a href="Gcami.html">INÍCIO</a>
-    <a href="rastrecam.html">RASTREAMENTO</a>
-    <a href="addcam.html">ADICIONAR CAMINHÃO</a>
-    <a href="relatoriomanucam.html">RELATORIOS DE MANUTENÇÃO</a>
+    <a href="Gmaq.html">INÍCIO</a>
+    <a href="addmaq.html">ADICIONAR MAQUINA</a>
+    <a href="monitmaq.html">MONITORAMENTO DE MAQUINA</a>
+    <a href="relatmaq.html">RELATORIOS OPERACIONAL</a>
   </div>
 
   <div class="content">
-    <h2>📄 Relatórios Salvos</h2>
-    <div id="lista"></div>
+    <h2>📋 Relatórios de Manutenção Salvos</h2>
+    <div id="listaRelatorios"></div>
   </div>
 
-  <footer class="footer">
-    <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
-  </footer>
   <script>
-    const lista = document.getElementById("lista");
-
     function carregar() {
-      lista.innerHTML = "";
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosOperacionais")) || [];
+      const lista = document.getElementById("listaRelatorios");
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosManutencaoMaq")) || [];
+
+      lista.innerHTML = ""; // limpa antes de recriar
 
       if (relatorios.length === 0) {
         lista.innerHTML = "<p>Nenhum relatório salvo ainda.</p>";
@@ -38,31 +36,34 @@
           const item = document.createElement("div");
           item.classList.add("relatorio-item");
           item.innerHTML = `
-            <h3>Relatório Operacional${i + 1}</h3>
+            <hr>
+            <h3>Relatório ${i + 1}</h3>
+            <p><strong>Tipo:</strong> ${r.tipo}</p>
             <p><strong>Nome:</strong> ${r.nome}</p>
-            <p><strong>Placa:</strong> ${r.placa}</p>
+            <p><strong>Código da Máquina:</strong> ${r.maquina}</p>
             <p><strong>Data:</strong> ${r.data}</p>
-            <p><strong>Saída:</strong> ${r.saida}</p>
-            <p><strong>Chegada:</strong> ${r.chegada}</p>
             <p><strong>Informações:</strong> ${r.observacoes}</p>
             <button class="btn-excluir" onclick="excluir(${i})">Excluir</button>
-            <hr>
           `;
           lista.appendChild(item);
         });
       }
     }
-
     function excluir(i) {
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosOperacionais")) || [];
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosManutencaoMaq")) || [];
       if (confirm("Excluir este relatório?")) {
         relatorios.splice(i, 1);
-        localStorage.setItem("relatoriosOperacionais", JSON.stringify(relatorios));
+        localStorage.setItem("relatoriosManutencaoMaq", JSON.stringify(relatorios));
         carregar();
       }
     }
 
     carregar();
   </script>
+  <br>
+  <br>
+   <footer class="footer">
+    <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
+  </footer>
 </body>
 </html>
