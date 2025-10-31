@@ -34,13 +34,15 @@
     <a href="Gcami.html">INÍCIO</a>
     <a href="rastrecam.html">RASTREAMENTO</a>
     <a href="addcam.html">ADICIONAR CAMINHÃO</a>
-    <a href="relatoriomanucam.html">RELATORIOS DE MANUTENÇÃO</a>
+    <a href="relatcam.html">RELATORIOS OPERACIONAIS</a>
   </div>
 
   <div class="content">
     <h2>📄 Relatórios Salvos</h2>
     <div id="lista"></div>
   </div>
+  <div><button onclick="window.location.href='novorelatoriomanu.html'">Adicionar relatorio</button></div>
+  <br><br><br>
 
   <footer class="footer">
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
@@ -50,21 +52,19 @@
 
     function carregar() {
       lista.innerHTML = "";
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosOperacionais")) || [];
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosManutencao")) || [];
 
-      if (relatorios.length === 0) {
+     if (relatorios.length === 0) {
         lista.innerHTML = "<p>Nenhum relatório salvo ainda.</p>";
       } else {
         relatorios.forEach((r, i) => {
           const item = document.createElement("div");
           item.classList.add("relatorio-item");
           item.innerHTML = `
-            <h3>Relatório Operacional${i + 1}</h3>
+            <h3>Relatório de Manutenção ${i + 1}</h3>
             <p><strong>Nome:</strong> ${r.nome}</p>
             <p><strong>Placa:</strong> ${r.placa}</p>
             <p><strong>Data:</strong> ${r.data}</p>
-            <p><strong>Saída:</strong> ${r.saida}</p>
-            <p><strong>Chegada:</strong> ${r.chegada}</p>
             <p><strong>Informações:</strong> ${r.observacoes}</p>
             <button class="btn-excluir" onclick="excluir(${i})">Excluir</button>
             <hr>
@@ -75,15 +75,17 @@
     }
 
     function excluir(i) {
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosOperacionais")) || [];
-      if (confirm("Excluir este relatório?")) {
-        relatorios.splice(i, 1);
-        localStorage.setItem("relatoriosOperacionais", JSON.stringify(relatorios));
-        carregar();
-      }
-    }
+  const relatorios = JSON.parse(localStorage.getItem("relatoriosManutencao")) || [];
 
-    carregar();
+  if (confirm("Excluir este relatório?")) {
+    relatorios.splice(i, 1); // remove o item selecionado
+    localStorage.setItem("relatoriosManutencao", JSON.stringify(relatorios)); // salva de volta
+    carregar(); // recarrega a lista atualizada
+  }
+}
+
+// carrega a lista ao abrir a página
+carregar();
   </script>
 </body>
 </html>

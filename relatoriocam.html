@@ -17,7 +17,7 @@
   <div class="content">
     <img src="IMG/transgraos.png" alt="TransGrãos" class="logo">
 
-    <form id="relatoriocam">
+    <form id="operacional">
       <label for="tipo">Tipo de Relatório</label>
       <select id="tipo" name="tipo">
         <option>Operacional</option>
@@ -49,9 +49,8 @@
   <footer class="footer">
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
   </footer>
-
   <script>
-    document.getElementById("relatoriocam").addEventListener("submit", function(event) {
+    document.getElementById("operacional").addEventListener("submit", function(event) {
       event.preventDefault();
 
       const relatorio = {
@@ -64,12 +63,13 @@
         observacoes: document.getElementById("obs").value
       };
 
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosTransgraos")) || [];
+      // Armazenamento separado
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosOperacionais")) || [];
       relatorios.push(relatorio);
-      localStorage.setItem("relatoriosTransgraos", JSON.stringify(relatorios));
+      localStorage.setItem("relatoriosOperacionais", JSON.stringify(relatorios));
 
-      alert("✅ Relatório salvo com sucesso!");
-      document.getElementById("relatoriocam").reset();
+      alert("✅ Relatório operacional salvo com sucesso!");
+      document.getElementById("operacional").reset();
     });
   </script>
 </body>
