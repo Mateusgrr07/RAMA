@@ -7,7 +7,6 @@
   <link rel="stylesheet" href="relatorio.css">
   <link rel="stylesheet" href="stylesfooter.css">
   <style>
-    /* estilo simples para os botões de exclusão */
     .btn-excluir {
       background-color: #d9534f;
       color: white;
@@ -49,9 +48,8 @@
   <script>
     const lista = document.getElementById("listaRelatorios");
 
-    // Função para carregar e exibir os relatórios
     function carregarRelatorios() {
-      lista.innerHTML = ""; // limpa a tela antes de recarregar
+      lista.innerHTML = "";
       const relatorios = JSON.parse(localStorage.getItem("relatoriosTransgraos")) || [];
 
       if (relatorios.length === 0) {
@@ -77,7 +75,6 @@
       }
     }
 
-    // Função para excluir um relatório específico
     function excluirRelatorio(index) {
       const relatorios = JSON.parse(localStorage.getItem("relatoriosTransgraos")) || [];
       if (confirm("Tem certeza que deseja excluir este relatório?")) {
