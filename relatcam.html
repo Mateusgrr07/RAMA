@@ -52,28 +52,44 @@
       lista.innerHTML = "";
       const relatorios = JSON.parse(localStorage.getItem("relatoriosTransgraos")) || [];
 
-      if (relatorios.length === 0) {
-        lista.innerHTML = "<p>Nenhum relatório salvo ainda.</p>";
-      } else {
-        relatorios.forEach((r, i) => {
-          const item = document.createElement("div");
-          item.classList.add("relatorio-item");
-          item.innerHTML = `
-            <h3>Relatório ${i + 1}</h3>
-            <p><strong>Tipo:</strong> ${r.tipo}</p>
-            <p><strong>Nome:</strong> ${r.nome}</p>
-            <p><strong>Placa:</strong> ${r.placa}</p>
-            <p><strong>Data:</strong> ${r.data}</p>
-            <p><strong>Saída:</strong> ${r.saida}</p>
-            <p><strong>Chegada:</strong> ${r.chegada}</p>
-            <p><strong>Informações:</strong> ${r.observacoes}</p>
-            <button class="btn-excluir" onclick="excluirRelatorio(${i})">Excluir</button>
-            <hr>
-          `;
-          lista.appendChild(item);
-        });
-      }
+    if (!relatorios || !Array.isArray(relatorios) || relatorios.length === 0) {
+  lista.innerHTML = "<p>Nenhum relatório salvo ainda.</p>";
+} else {
+  lista.innerHTML = ""; // limpa antes de adicionar novos itens
+  relatorios.forEach((r, i) => {
+    const item = document.createElement("div");
+    item.classList.add("relatorio-item");
+
+    if (r.tipo.toLowerCase() === "manutenção") {
+      item.innerHTML = `
+        <h3>Relatório de Manutenção ${i + 1}</h3>
+        <p><strong>Equipamento:</strong> ${r.nome}</p>
+        <p><strong>Placa / ID:</strong> ${r.placa}</p>
+        <p><strong>Data:</strong> ${r.data}</p>
+        <p><strong>Descrição da Manutenção:</strong> ${r.observacoes}</p>
+        <p><strong>Status:</strong> ${r.status || "Em andamento"}</p>
+        <button class="btn-excluir" onclick="excluirRelatorio(${i})">Excluir</button>
+        <hr>
+      `;
+    } else {
+      item.innerHTML = `
+        <h3>Relatório Operacional ${i + 1}</h3>
+        <p><strong>Nome:</strong> ${r.nome}</p>
+        <p><strong>Placa:</strong> ${r.placa}</p>
+        <p><strong>Data:</strong> ${r.data}</p>
+        <p><strong>Saída:</strong> ${r.saida}</p>
+        <p><strong>Chegada:</strong> ${r.chegada}</p>
+        <p><strong>Informações:</strong> ${r.observacoes}</p>
+        <button class="btn-excluir" onclick="excluirRelatorio(${i})">Excluir</button>
+        <hr>
+      `;
     }
+
+    lista.appendChild(item);
+  });
+}
+
+}
 
     function excluirRelatorio(index) {
       const relatorios = JSON.parse(localStorage.getItem("relatoriosTransgraos")) || [];
