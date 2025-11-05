@@ -3,13 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Relatórios - TransGrãos</title>
+  <title>Caminhões</title>
+  <link rel="stylesheet" href="painel.css">
+  <link rel="stylesheet" href="stylesfooter.css">
+  <link rel="stylesheet" href="sidebar.css">
 </head>
 <body>
   <div class="content">
-    <h2>📋 Relatórios de Caminhões</h2>
+    <h2>Caminhões</h2>
     <div id="lista"></div>
-     <a href="addmaq.html"><button>Adicionar relatorio</button></a>
+    <a href="addmaq.html"><button>Adicionar Caminhão</button></a>
   </div>
 
   <footer class="footer">
@@ -36,7 +39,6 @@
             <p><strong>Família:</strong> ${r.familia}</p>
             <p><strong>Ano:</strong> ${r.ano}</p>
             <button class="btn-excluir" onclick="excluir(${i})">🗑 Excluir</button>
-            <hr>
           `;
           lista.appendChild(item);
         });
@@ -56,3 +58,4 @@
   </script>
 </body>
 </html>
+
