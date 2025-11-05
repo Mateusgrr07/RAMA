@@ -7,11 +7,44 @@
     <link rel="stylesheet" href="monitmaq.css">
 </head>
 <body>
-     <div class="sidebar">
+<div class="sidebar">
     <img src="IMG/RamaSemFundo.png" alt="Logo Rama">
     <a href="Gmaq.html">INÍCIO</a>
     <a href="addmaq.html">ADICIONAR MAQUINA</a>
     <a href="relatmaq.html">RELATORIOS PERSONALIZADOS</a>
-    </div>  
+</div>
+<h1>Local da Máquina</h1>
+  <p>Clique no botão abaixo para ver a localização da máquina:</p>
+  <button onclick="mostrarLocal()">Ativar GPS</button>
+
+  <p id="info"></p>
+  <iframe id="mapa" src="" allowfullscreen></iframe>
+
+  <script>
+    function mostrarLocal() {
+      const info = document.getElementById("info");
+      const map = document.getElementById("mapa");
+
+      if (navigator.geolocation) {
+        info.innerHTML = "Obtendo localização...";
+
+        navigator.geolocation.getCurrentPosition(
+          function(posicao) {
+            const lat = posicao.coords.latitude;
+            const lon = posicao.coords.longitude;
+
+            info.innerHTML = `Latitude: ${lat.toFixed(6)} <br>Longitude: ${lon.toFixed(6)}`;
+
+            mapa.src = `https://www.google.com/maps?q=${lat},${lon}&z=15&output=embed`;
+          },
+          function(erro) {
+            info.innerHTML = "Não foi possível obter sua localização 😕";
+          }
+        );
+      } else {
+        info.innerHTML = "Seu navegador não suporta geolocalização.";
+      }
+    }
+  </script>
 </body>
 </html>
