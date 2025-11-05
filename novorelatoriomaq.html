@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatório - TransGrãos</title>
+  <link rel="stylesheet" href="relatorio.css">
+  <link rel="stylesheet" href="stylesfooter.css">
+</head>
+<body>
+<div class="sidebar">
+    <img src="IMG/RamaSemFundo.png" alt="Logo Rama">
+    <a href="Gmaq.html">INÍCIO</a>
+    <a href="addmaq.html">ADICIONAR MAQUINA</a>
+    <a href="relatmaq.html">RELATORIO OPERACIONAL</a>
+    <a href="relatoriomanumaq.html">RELATORIO DE MANUTENÇÃO</a>
+  </div>
+  <div class="content">
+    <img src="IMG/transgraos.png" alt="TransGrãos" class="logo">
+
+    <form id="manutencaomaq">
+      <label for="tipo">Tipo de Relatório</label>
+      <select id="tipo" name="tipo">
+        <option>Manutenção</option>
+      </select>
+
+      <label for="nome">Nome</label>
+      <input type="text" id="nome" name="nome">
+
+      <label for="maquina">Código da Máquina</label>
+      <input type="text" id="maquina" name="maquina">
+
+      <label for="data">Data da Manutenção</label>
+      <input type="date" id="data" name="data">
+
+      <label for="obs">Informações da Manutenção:</label>
+      <textarea id="obs" name="observacoes"></textarea>
+
+      <button type="submit">Salvar</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("manutencaomaq").addEventListener("submit", function(event) {
+      event.preventDefault();
+
+      const relatorio = {
+        tipo: document.getElementById("tipo").value,
+        nome: document.getElementById("nome").value,
+        maquina: document.getElementById("maquina").value,
+        data: document.getElementById("data").value,
+        observacoes: document.getElementById("obs").value
+      };
+
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosManutencaoMaq")) || [];
+      relatorios.push(relatorio);
+      localStorage.setItem("relatoriosManutencaoMaq", JSON.stringify(relatorios));
+
+      alert("✅ Relatório de manutenção salvo com sucesso!");
+      document.getElementById("manutencaomaq").reset();
+    });
+  </script>
+
+  <footer>
+    <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
+  </footer>
+</body>
+</html>

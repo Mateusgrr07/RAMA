@@ -17,23 +17,48 @@
 
   <div class="content">
     <img src="IMG/transgraos.png" alt="TransGrãos" class="logo">
+    <h2>Cadastro de Máquinas</h2>
 
-    <form>
-      <label for="codigo">Codigo</label>
-      <input type="text" id="codigo" name="codigo">
+    <form id="formMaquina">
+      <label for="codigo">Código:</label>
+      <input type="text" id="codigo" name="codigo" required>
 
-      <label for="modelo">Modelo da Maquina</label>
-      <input type="text" id="modelo" name="modelo">
+      <label for="modelo">Modelo da Máquina:</label>
+      <input type="text" id="modelo" name="modelo" required>
 
-      <label for="tipo">Tipo da Maquina</label>
-      <input type="text" id="tipo" name="tipo">
+      <label for="tipo">Tipo da Máquina:</label>
+      <input type="text" id="tipo" name="tipo" required>
 
-      <label for="ano">Ano da Maquina</label>
-      <input type="text" id="ano" name="ano">
+      <label for="ano">Ano da Máquina:</label>
+      <input type="text" id="ano" name="ano" required>
 
-      <button type="submit">Adicionar</button>
+      <button type="submit">Salvar Relatório</button>
     </form>
   </div>
+  <script>
+    const form = document.getElementById("formMaquina");
+
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+
+      const codigo = document.getElementById("codigo").value;
+      const modelo = document.getElementById("modelo").value;
+      const tipo = document.getElementById("tipo").value;
+      const ano = document.getElementById("ano").value;
+
+      const relatorio = { codigo, modelo, tipo, ano };
+
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosMaquinas")) || [];
+
+      relatorios.push(relatorio);
+
+      localStorage.setItem("relatoriosMaquinas", JSON.stringify(relatorios));
+
+      alert("✅ Maquina adicionada com sucesso!");
+      form.reset();
+
+    });
+  </script>
   <br>
   <br>
   <footer class="footer">

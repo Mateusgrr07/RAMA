@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relatórios - TransGrãos</title>
+</head>
+<body>
+  <div class="content">
+    <h2>📋 Relatórios de Caminhões</h2>
+    <div id="lista"></div>
+     <a href="addmaq.html"><button>Adicionar relatorio</button></a>
+  </div>
+
+  <footer class="footer">
+    <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
+  </footer>
+
+  <script>
+    const lista = document.getElementById("lista");
+
+    function carregar() {
+      lista.innerHTML = "";
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosCaminhoes")) || [];
+
+      if (relatorios.length === 0) {
+        lista.innerHTML = "<p>Nenhum relatório salvo ainda.</p>";
+      } else {
+        relatorios.forEach((r, i) => {
+          const item = document.createElement("div");
+          item.classList.add("relatorio-item");
+          item.innerHTML = `
+            <h3>🚛 Caminhão ${i + 1}</h3>
+            <p><strong>Placa:</strong> ${r.placa}</p>
+            <p><strong>Modelo:</strong> ${r.modelo}</p>
+            <p><strong>Família:</strong> ${r.familia}</p>
+            <p><strong>Ano:</strong> ${r.ano}</p>
+            <button class="btn-excluir" onclick="excluir(${i})">🗑 Excluir</button>
+            <hr>
+          `;
+          lista.appendChild(item);
+        });
+      }
+    }
+
+    function excluir(i) {
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosCaminhoes")) || [];
+      if (confirm("Deseja realmente excluir este relatório?")) {
+        relatorios.splice(i, 1);
+        localStorage.setItem("relatoriosCaminhoes", JSON.stringify(relatorios));
+        carregar();
+      }
+    }
+
+    carregar();
+  </script>
+</body>
+</html>

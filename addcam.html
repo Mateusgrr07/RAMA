@@ -12,34 +12,57 @@
     <img src="IMG/RamaSemFundo.png" alt="Logo Rama">
     <a href="Gcami.html">INÍCIO</a>
     <a href="rastrecam.html">RASTREAMENTO</a>
-    <a href="relatcam.html">RELATORIOS</a>
+    <a href="relatcam.html">RELATÓRIOS</a>
   </div>
 
   <div class="content">
     <img src="IMG/transgraos.png" alt="TransGrãos" class="logo">
 
-    <form>
-
+    <form id="formCaminhao">
       <label for="placa">Placa</label>
-      <input type="text" id="placa" name="placa">
+      <input type="text" id="placa" name="placa" required>
 
       <label for="modelo">Modelo do Caminhão</label>
-      <input type="text" id="modelo" name="modelo">
+      <input type="text" id="modelo" name="modelo" required>
 
       <label for="familia">Família</label>
-      <input type="text" id="familia" name="familia">
+      <input type="text" id="familia" name="familia" required>
 
-      <label for="ano">Ano do veiculo</label>
-      <input type="text" id="ano" name="ano">
-
+      <label for="ano">Ano do Veículo</label>
+      <input type="text" id="ano" name="ano" required>
 
       <button type="submit">Adicionar</button>
     </form>
   </div>
   <br>
   <br>
-  <footer class="footer">
+   <footer class="footer">
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
   </footer>
+
+  <script>
+    const form = document.getElementById("formCaminhao");
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const placa = document.getElementById("placa").value;
+      const modelo = document.getElementById("modelo").value;
+      const familia = document.getElementById("familia").value;
+      const ano = document.getElementById("ano").value;
+
+      const caminhao = { placa, modelo, familia, ano };
+
+      const relatorios = JSON.parse(localStorage.getItem("relatoriosCaminhoes")) || [];
+
+      relatorios.push(caminhao);
+
+      localStorage.setItem("relatoriosCaminhoes", JSON.stringify(relatorios));
+
+      alert("✅ Caminhão adicionado com sucesso!");
+      form.reset();
+
+    });
+  </script>
 </body>
 </html>
