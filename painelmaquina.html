@@ -19,42 +19,78 @@
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
   </footer>
 
-  <script>
+<script>
     const lista = document.getElementById("lista");
 
+    // A função carregar agora busca os dados do PHP
     function carregar() {
-      lista.innerHTML = "";
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosMaquinas")) || [];
+      lista.innerHTML = "<p>Carregando máquinas...</p>";
 
-      if (relatorios.length === 0) {
-        lista.innerHTML = "<p>Nenhum relatório salvo ainda.</p>";
-      } else {
-        relatorios.forEach((r, i) => {
-          const item = document.createElement("div");
-          item.classList.add("relatorio-item");
-          item.innerHTML = `
-            <h3>Máquina ${i + 1}</h3>
-            <p><strong>Código:</strong> ${r.codigo}</p>
-            <p><strong>Modelo:</strong> ${r.modelo}</p>
-            <p><strong>Tipo:</strong> ${r.tipo}</p>
-            <p><strong>Ano:</strong> ${r.ano}</p>
-            <button class="btn-excluir" onclick="excluir(${i})">🗑 Excluir</button>
-            <hr>
-          `;
-          lista.appendChild(item);
+      fetch('api/get_maquinas.php') // <--- CORRETO: Busca máquinas
+        .then(response => {
+            if (!response.ok) {
+                 alert('Sessão expirada. Faça login novamente.');
+                 window.location.href = 'Login.html';
+                 throw new Error('Não autenticado');
+            }
+            return response.json();
+        })
+        .then(maquinas => { // <--- CORRETO: 'maquinas'
+          lista.innerHTML = ""; // Limpa a lista
+          
+          if (maquinas.length === 0) {
+            lista.innerHTML = "<p>Nenhuma máquina cadastrada no banco.</p>"; // <--- CORRETO: Mensagem de máquina
+          } else {
+            maquinas.forEach(m => { // <--- CORRETO: 'm' de maquina
+              const item = document.createElement("div");
+              item.classList.add("relatorio-item");
+              
+              // Usando os dados do banco (m.id, m.codigo, etc.)
+              item.innerHTML = `
+                <h3>${m.modelo}</h3>
+                <p><strong>Código:</strong> ${m.codigo}</p>
+                <p><strong>Tipo:</strong> ${m.tipo}</p>
+                <p><strong>Ano:</strong> ${m.ano}</p>
+                <button class="btn-excluir" onclick="excluir(${m.id})">🗑 Excluir</button>
+              `;
+              lista.appendChild(item);
+            });
+          }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar:', error);
+            lista.innerHTML = "<p>Erro ao carregar dados.</p>";
+        });
+    }
+
+    // A função excluir agora manda o ID para o PHP
+    function excluir(id_da_maquina) {
+      if (confirm("Excluir esta máquina do banco de dados?")) {
+        
+        fetch('api/delete_maquina.php', { // <--- CORRETO: delete de máquina
+          method: 'POST', 
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: id_da_maquina }) // Envia o ID
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Máquina excluída com sucesso!');
+            carregar(); // Recarrega a lista
+          } else {
+            alert('Erro ao excluir: ' + data.error);
+          }
+        })
+        .catch(error => {
+            console.error('Erro ao excluir:', error);
+            alert('Erro de conexão ao tentar excluir.');
         });
       }
     }
 
-    function excluir(i) {
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosMaquinas")) || [];
-      if (confirm("Excluir este relatório?")) {
-        relatorios.splice(i, 1);
-        localStorage.setItem("relatoriosMaquinas", JSON.stringify(relatorios));
-        carregar();
-      }
-    }
-
+    // Carrega os dados assim que a página abre
     carregar();
   </script>
 </body>

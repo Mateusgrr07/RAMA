@@ -16,14 +16,18 @@ $cargo = $_POST['cargo'];
 $setor = isset($_POST['setor']) ? $_POST['setor'] : "";
 $senha = password_hash($_POST['senha'], PASSWORD_DEFAULT);
 
-$sql = "INSERT INTO usuarios (nome, email, cargo, setor, senha)
-        VALUES ('$nome', '$email', '$cargo', '$setor', '$senha')";
+// Usando Prepared Statements para evitar SQL Injection
+$stmt = $conn->prepare("INSERT INTO usuarios (nome, email, cargo, setor, senha) VALUES (?, ?, ?, ?, ?)");
+// sss = string, string, string
+$stmt->bind_param("sssss", $nome, $email, $cargo, $setor, $senha);
 
-if ($conn->query($sql) === TRUE) {
+if ($stmt->execute()) {
     header("Location: Login.html"); // redireciona direto pro login
     exit();
 } else {
-    echo "Erro: " . $conn->error;
+    echo "Erro: " . $stmt->error;
 }
 
+$stmt->close();
 $conn->close();
+?>

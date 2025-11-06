@@ -12,50 +12,87 @@
   <div class="content">
     <h2>Caminhões</h2>
     <div id="lista"></div>
-    <a href="addmaq.html"><button>Adicionar Caminhão</button></a>
+    <a href="addcam.html"><button>Adicionar Caminhão</button></a>
   </div>
 
   <footer class="footer">
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
   </footer>
 
-  <script>
+<script>
     const lista = document.getElementById("lista");
 
+    // A função carregar agora busca os dados do PHP
     function carregar() {
-      lista.innerHTML = "";
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosCaminhoes")) || [];
+      lista.innerHTML = "<p>Carregando caminhões...</p>";
 
-      if (relatorios.length === 0) {
-        lista.innerHTML = "<p>Nenhum relatório salvo ainda.</p>";
-      } else {
-        relatorios.forEach((r, i) => {
-          const item = document.createElement("div");
-          item.classList.add("relatorio-item");
-          item.innerHTML = `
-            <h3>🚛 Caminhão ${i + 1}</h3>
-            <p><strong>Placa:</strong> ${r.placa}</p>
-            <p><strong>Modelo:</strong> ${r.modelo}</p>
-            <p><strong>Família:</strong> ${r.familia}</p>
-            <p><strong>Ano:</strong> ${r.ano}</p>
-            <button class="btn-excluir" onclick="excluir(${i})">🗑 Excluir</button>
-          `;
-          lista.appendChild(item);
+      fetch('api/get_caminhoes.php') // Faz a chamada para a API
+        .then(response => {
+            if (!response.ok) {
+                 // Se deu erro (ex: não logado), manda pro login
+                 alert('Sessão expirada. Faça login novamente.');
+                 window.location.href = 'Login.html';
+                 throw new Error('Não autenticado');
+            }
+            return response.json();
+        })
+        .then(caminhoes => { // 'caminhoes' é a lista que veio do PHP
+          lista.innerHTML = ""; // Limpa a lista
+          
+          if (caminhoes.length === 0) {
+            lista.innerHTML = "<p>Nenhum caminhão cadastrado no banco.</p>";
+          } else {
+            caminhoes.forEach(c => { // Note que agora usamos 'c' (de caminhao)
+              const item = document.createElement("div");
+              item.classList.add("relatorio-item");
+              
+              // Usando os dados do banco (c.id, c.placa, etc.)
+              item.innerHTML = `
+                <h3>🚛 ${c.modelo}</h3>
+                <p><strong>Placa:</strong> ${c.placa}</p>
+                <p><strong>Família:</strong> ${c.familia}</p>
+                <p><strong>Ano:</strong> ${c.ano}</p>
+                <button class="btn-excluir" onclick="excluir(${c.id})">🗑 Excluir</button>
+              `;
+              lista.appendChild(item);
+            });
+          }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar:', error);
+            lista.innerHTML = "<p>Erro ao carregar dados.</p>";
+        });
+    }
+
+    // A função excluir agora manda o ID para o PHP
+    function excluir(id_do_caminhao) {
+      if (confirm("Excluir este caminhão do banco de dados?")) {
+        
+        fetch('api/delete_caminhao.php', {
+          method: 'POST', // ou 'DELETE'
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: id_do_caminhao }) // Envia o ID
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Caminhão excluído com sucesso!');
+            carregar(); // Recarrega a lista
+          } else {
+            alert('Erro ao excluir: ' + data.error);
+          }
+        })
+        .catch(error => {
+            console.error('Erro ao excluir:', error);
+            alert('Erro de conexão ao tentar excluir.');
         });
       }
     }
 
-    function excluir(i) {
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosCaminhoes")) || [];
-      if (confirm("Deseja realmente excluir este relatório?")) {
-        relatorios.splice(i, 1);
-        localStorage.setItem("relatoriosCaminhoes", JSON.stringify(relatorios));
-        carregar();
-      }
-    }
-
+    // Carrega os dados assim que a página abre
     carregar();
   </script>
 </body>
 </html>
-

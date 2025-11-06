@@ -42,28 +42,67 @@
     </form>
 
   <script>
-    document.getElementById("operacionalmaq").addEventListener("submit", function(event) {
-      event.preventDefault();
+    // Primeiro, verificamos se o usuário está logado
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('api/get_session.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Não autenticado');
+                }
+                return response.json();
+            })
+            .then(user => {
+                if (!user.success) {
+                    throw new Error('Não autenticado');
+                }
+                // Preenche o campo 'nome' automaticamente com o nome do usuário logado
+                // e o desabilita, já que ele não precisa preencher
+                const nomeInput = document.getElementById("nome");
+                if (nomeInput) {
+                    nomeInput.value = user.nome;
+                    nomeInput.readOnly = true; // Impede que o usuário mude o nome
+                }
+            })
+            .catch(error => {
+                // Se der erro, manda para o Login
+                alert('Você precisa estar logado para acessar esta página.');
+                window.location.href = 'Login.html';
+            });
+    });
 
-      const relatorio = {
-        tipo: document.getElementById("tipo").value,
-        nome: document.getElementById("nome").value,
-        codigo: document.getElementById("codigo").value,
-        data: document.getElementById("data").value,
-        tempo: document.getElementById("tempo").value,
-        observacoes: document.getElementById("obs").value
-      };
+    // Agora, o submit do formulário
+    const form = document.getElementById("operacionalmaq");
 
-      // Armazena separadamente os relatórios operacionais
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosOperacionaisMaq")) || [];
-      relatorios.push(relatorio);
-      localStorage.setItem("relatoriosOperacionaisMaq", JSON.stringify(relatorios));
+    form.addEventListener("submit", function (e) {
+      e.preventDefault(); // Evita o recarregamento da página
 
-      alert("✅ Relatório operacional salvo com sucesso!");
-      document.getElementById("operacionalmaq").reset();
+      // Usamos o FormData para pegar todos os campos do formulário
+      const formData = new FormData(form);
+
+      // Enviamos os dados para o PHP usando 'fetch'
+      fetch('api/add_relatorio_op_maq.php', {
+        method: 'POST',
+        body: formData // Envia os dados do formulário
+      })
+      .then(response => response.json()) // Espera uma resposta JSON
+      .then(data => {
+        if (data.success) {
+          alert("✅ Relatório operacional salvo no banco de dados!");
+          form.reset();
+          // Repõe o nome do usuário no campo desabilitado
+           const nomeInput = document.getElementById("nome");
+           if(nomeInput) fetch('api/get_session.php').then(r => r.json()).then(user => nomeInput.value = user.nome);
+        } else {
+          // Mostra o erro que veio do PHP
+          alert("Erro: " + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Erro na requisição:', error);
+        alert('Ocorreu um erro de conexão.');
+      });
     });
   </script>
-
   <footer>
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
   </footer>

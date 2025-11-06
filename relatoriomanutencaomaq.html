@@ -40,26 +40,67 @@
   </div>
 
   <script>
-    document.getElementById("manutencaomaq").addEventListener("submit", function(event) {
-      event.preventDefault();
+    // Primeiro, verificamos se o usuário está logado
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('api/get_session.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Não autenticado');
+                }
+                return response.json();
+            })
+            .then(user => {
+                if (!user.success) {
+                    throw new Error('Não autenticado');
+                }
+                // Preenche o campo 'nome' automaticamente com o nome do usuário logado
+                const nomeInput = document.getElementById("nome");
+                if (nomeInput) {
+                    nomeInput.value = user.nome;
+                    nomeInput.readOnly = true; // Impede que o usuário mude o nome
+                }
+            })
+            .catch(error => {
+                // Se der erro, manda para o Login
+                alert('Você precisa estar logado para acessar esta página.');
+                window.location.href = 'Login.html';
+            });
+    });
 
-      const relatorio = {
-        tipo: document.getElementById("tipo").value,
-        nome: document.getElementById("nome").value,
-        maquina: document.getElementById("maquina").value,
-        data: document.getElementById("data").value,
-        observacoes: document.getElementById("obs").value
-      };
+    // Agora, o submit do formulário (o id do seu form é "manutencaomaq")
+    const form = document.getElementById("manutencaomaq");
 
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosManutencaoMaq")) || [];
-      relatorios.push(relatorio);
-      localStorage.setItem("relatoriosManutencaoMaq", JSON.stringify(relatorios));
+    form.addEventListener("submit", function (e) {
+      e.preventDefault(); // Evita o recarregamento da página
 
-      alert("✅ Relatório de manutenção salvo com sucesso!");
-      document.getElementById("manutencaomaq").reset();
+      // Usamos o FormData para pegar todos os campos do formulário
+      const formData = new FormData(form);
+
+      // Enviamos os dados para o PHP usando 'fetch'
+      fetch('api/add_relatorio_manu_maq.php', {
+        method: 'POST',
+        body: formData // Envia os dados do formulário
+      })
+      .then(response => response.json()) // Espera uma resposta JSON
+      .then(data => {
+        if (data.success) {
+          alert("✅ Relatório de manutenção salvo no banco de dados!");
+          form.reset();
+          // Repõe o nome do usuário no campo desabilitado
+           const nomeInput = document.getElementById("nome");
+           if(nomeInput) fetch('api/get_session.php').then(r => r.json()).then(user => nomeInput.value = user.nome);
+        } else {
+          // Mostra o erro que veio do PHP
+          alert("Erro: " + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Erro na requisição:', error);
+        alert('Ocorreu um erro de conexão.');
+      });
     });
   </script>
-
+  
   <footer>
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
   </footer>

@@ -41,27 +41,58 @@
   </footer>
 
   <script>
+    // Primeiro, verificamos se o usuário está logado
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('api/get_session.php')
+            .then(response => {
+                if (!response.ok) {
+                    // Se a resposta não for OK (ex: 401), o usuário não está logado
+                    throw new Error('Não autenticado');
+                }
+                return response.json();
+            })
+            .then(user => {
+                if (!user.success) {
+                    throw new Error('Não autenticado');
+                }
+                // Se chegou aqui, o usuário está logado.
+                console.log('Usuário logado:', user.nome);
+            })
+            .catch(error => {
+                // Se der erro, manda para o Login
+                alert('Você precisa estar logado para acessar esta página.');
+                window.location.href = 'Login.html';
+            });
+    });
+
+    // Agora, o submit do formulário
     const form = document.getElementById("formCaminhao");
 
     form.addEventListener("submit", function (e) {
-      e.preventDefault();
+      e.preventDefault(); // Evita o recarregamento da página
 
-      const placa = document.getElementById("placa").value;
-      const modelo = document.getElementById("modelo").value;
-      const familia = document.getElementById("familia").value;
-      const ano = document.getElementById("ano").value;
+      // Usamos o FormData para pegar todos os campos do formulário
+      const formData = new FormData(form);
 
-      const caminhao = { placa, modelo, familia, ano };
-
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosCaminhoes")) || [];
-
-      relatorios.push(caminhao);
-
-      localStorage.setItem("relatoriosCaminhoes", JSON.stringify(relatorios));
-
-      alert("✅ Caminhão adicionado com sucesso!");
-      form.reset();
-
+      // Enviamos os dados para o PHP usando 'fetch'
+      fetch('api/add_caminhao.php', {
+        method: 'POST',
+        body: formData // Envia os dados do formulário
+      })
+      .then(response => response.json()) // Espera uma resposta JSON
+      .then(data => {
+        if (data.success) {
+          alert("✅ Caminhão adicionado ao banco de dados!");
+          form.reset();
+        } else {
+          // Mostra o erro que veio do PHP
+          alert("Erro: " + data.error);
+        }
+      })
+      .catch(error => {
+        console.error('Erro na requisição:', error);
+        alert('Ocorreu um erro de conexão.');
+      });
     });
   </script>
 </body>

@@ -25,41 +25,82 @@
   </div>
 
   <script>
+    // O ID da sua lista é "listaRelatorios"
+    const lista = document.getElementById("listaRelatorios");
+
+    // A função carregar agora busca os dados do PHP
     function carregar() {
-      const lista = document.getElementById("listaRelatorios");
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosManutencaoMaq")) || [];
+      lista.innerHTML = "<p>Carregando relatórios...</p>";
 
-      lista.innerHTML = ""; // limpa antes de recriar
+      fetch('api/get_relatorios_manu_maq.php') // Faz a chamada para a API
+        .then(response => {
+            if (!response.ok) {
+                 alert('Sessão expirada. Faça login novamente.');
+                 window.location.href = 'Login.html';
+                 throw new Error('Não autenticado');
+            }
+            return response.json();
+        })
+        .then(relatorios => { // 'relatorios' é a lista que veio do PHP
+          lista.innerHTML = ""; // Limpa a lista
+          
+          if (relatorios.length === 0) {
+            lista.innerHTML = "<p>Nenhum relatório de manutenção cadastrado no banco.</p>";
+          } else {
+            relatorios.forEach(r => { 
+              const item = document.createElement("div");
+              item.classList.add("relatorio-item");
+              
+              // Usando os dados do banco (r.id, r.codigo_maquina, etc.)
+              // E o r.nome_usuario que veio do JOIN
+              // Note que o seu HTML antigo usava r.maquina, o banco usa r.codigo_maquina
+              item.innerHTML = `
+                <hr>
+                <h3>Relatório de Manutenção (ID: ${r.id})</h3>
+                <p><strong>Criado por:</strong> ${r.nome_usuario}</p>
+                <p><strong>Código da Máquina:</strong> ${r.codigo_maquina}</p>
+                <p><strong>Data:</strong> ${r.data_manutencao}</p>
+                <p><strong>Informações:</strong> ${r.observacoes}</p>
+                <button class="btn-excluir" onclick="excluir(${r.id})">Excluir</button>
+              `;
+              lista.appendChild(item);
+            });
+          }
+        })
+        .catch(error => {
+            console.error('Erro ao carregar:', error);
+            lista.innerHTML = "<p>Erro ao carregar dados.</p>";
+        });
+    }
 
-      if (relatorios.length === 0) {
-        lista.innerHTML = "<p>Nenhum relatório salvo ainda.</p>";
-      } else {
-        relatorios.forEach((r, i) => {
-          const item = document.createElement("div");
-          item.classList.add("relatorio-item");
-          item.innerHTML = `
-            <hr>
-            <h3>Relatório ${i + 1}</h3>
-            <p><strong>Tipo:</strong> ${r.tipo}</p>
-            <p><strong>Nome:</strong> ${r.nome}</p>
-            <p><strong>Código da Máquina:</strong> ${r.maquina}</p>
-            <p><strong>Data:</strong> ${r.data}</p>
-            <p><strong>Informações:</strong> ${r.observacoes}</p>
-            <button class="btn-excluir" onclick="excluir(${i})">Excluir</button>
-          `;
-          lista.appendChild(item);
+    // A função excluir agora manda o ID para o PHP
+    function excluir(id_do_relatorio) {
+      if (confirm("Excluir este relatório do banco de dados?")) {
+        
+        fetch('api/delete_relatorio_manu_maq.php', {
+          method: 'POST', 
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ id: id_do_relatorio }) // Envia o ID
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            alert('Relatório excluído com sucesso!');
+            carregar(); // Recarrega a lista
+          } else {
+            alert('Erro ao excluir: ' + data.error);
+          }
+        })
+        .catch(error => {
+            console.error('Erro ao excluir:', error);
+            alert('Erro de conexão ao tentar excluir.');
         });
       }
     }
-    function excluir(i) {
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosManutencaoMaq")) || [];
-      if (confirm("Excluir este relatório?")) {
-        relatorios.splice(i, 1);
-        localStorage.setItem("relatoriosManutencaoMaq", JSON.stringify(relatorios));
-        carregar();
-      }
-    }
 
+    // Carrega os dados assim que a página abre
     carregar();
   </script>
   <br>
