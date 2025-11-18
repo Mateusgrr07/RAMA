@@ -36,30 +36,43 @@
     </form>
   </div>
 <script>
-    // Verifica login
+    // 1. Verifica se está logado
     document.addEventListener('DOMContentLoaded', () => {
-        fetch('api/get_session.php').then(r => r.json()).then(user => {
-            if (!user.success) { alert('Faça login primeiro.'); window.location.href = 'Login.html'; }
-        });
+        fetch('api/get_session.php')
+            .then(response => response.json())
+            .then(user => {
+                if (!user.success) {
+                    alert('Você precisa estar logado.');
+                    window.location.href = 'Login.html';
+                }
+            });
     });
 
+    // 2. Envia para o Banco de Dados
     const form = document.getElementById("formMaquina");
 
     form.addEventListener("submit", function(e) {
       e.preventDefault();
+
       const formData = new FormData(form);
 
-      fetch('api/add_maquina.php', { method: 'POST', body: formData })
+      fetch('api/add_maquina.php', {
+        method: 'POST',
+        body: formData
+      })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
           alert("✅ Máquina salva no Banco de Dados!");
           form.reset();
         } else {
-          alert("Erro: " + data.error);
+          alert("Erro ao salvar: " + data.error);
         }
       })
-      .catch(err => alert('Erro de conexão.'));
+      .catch(error => {
+        console.error('Erro:', error);
+        alert('Erro de conexão.');
+      });
     });
   </script>
   <br>
