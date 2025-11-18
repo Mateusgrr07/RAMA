@@ -35,28 +35,31 @@
       <button type="submit">Salvar Relatório</button>
     </form>
   </div>
-  <script>
+<script>
+    // Verifica login
+    document.addEventListener('DOMContentLoaded', () => {
+        fetch('api/get_session.php').then(r => r.json()).then(user => {
+            if (!user.success) { alert('Faça login primeiro.'); window.location.href = 'Login.html'; }
+        });
+    });
+
     const form = document.getElementById("formMaquina");
 
     form.addEventListener("submit", function(e) {
       e.preventDefault();
+      const formData = new FormData(form);
 
-      const codigo = document.getElementById("codigo").value;
-      const modelo = document.getElementById("modelo").value;
-      const tipo = document.getElementById("tipo").value;
-      const ano = document.getElementById("ano").value;
-
-      const relatorio = { codigo, modelo, tipo, ano };
-
-      const relatorios = JSON.parse(localStorage.getItem("relatoriosMaquinas")) || [];
-
-      relatorios.push(relatorio);
-
-      localStorage.setItem("relatoriosMaquinas", JSON.stringify(relatorios));
-
-      alert("✅ Maquina adicionada com sucesso!");
-      form.reset();
-
+      fetch('api/add_maquina.php', { method: 'POST', body: formData })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          alert("✅ Máquina salva no Banco de Dados!");
+          form.reset();
+        } else {
+          alert("Erro: " + data.error);
+        }
+      })
+      .catch(err => alert('Erro de conexão.'));
     });
   </script>
   <br>

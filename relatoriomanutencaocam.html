@@ -38,65 +38,39 @@
       <button type="submit">Salvar</button>
     </form>
   </div>
-  <script>
-    // Primeiro, verificamos se o usuário está logado
+<script>
+    // 1. Verifica login
     document.addEventListener('DOMContentLoaded', () => {
-        fetch('api/get_session.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Não autenticado');
-                }
-                return response.json();
-            })
-            .then(user => {
-                if (!user.success) {
-                    throw new Error('Não autenticado');
-                }
-                // Preenche o campo 'nome' automaticamente com o nome do usuário logado
-                const nomeInput = document.getElementById("nome");
-                if (nomeInput) {
-                    nomeInput.value = user.nome;
-                    nomeInput.readOnly = true; // Impede que o usuário mude o nome
-                }
-            })
-            .catch(error => {
-                // Se der erro, manda para o Login
-                alert('Você precisa estar logado para acessar esta página.');
+        fetch('api/get_session.php').then(r => r.json()).then(user => {
+            if(!user.success) {
                 window.location.href = 'Login.html';
-            });
+            } else {
+                const nomeInput = document.getElementById("nome");
+                if(nomeInput) { nomeInput.value = user.nome; nomeInput.readOnly = true; }
+            }
+        });
     });
 
-    // Agora, o submit do formulário (o id do seu form é "manutencao")
-    const form = document.getElementById("manutencao");
+    // 2. Envia formulário
+    document.getElementById("manutencao").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const formData = new FormData(this);
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault(); // Evita o recarregamento da página
-
-      // Usamos o FormData para pegar todos os campos do formulário
-      const formData = new FormData(form);
-
-      // Enviamos os dados para o PHP usando 'fetch'
       fetch('api/add_relatorio_manu_cam.php', {
         method: 'POST',
-        body: formData // Envia os dados do formulário
+        body: formData
       })
-      .then(response => response.json()) // Espera uma resposta JSON
+      .then(r => r.json())
       .then(data => {
         if (data.success) {
-          alert("✅ Relatório de manutenção salvo no banco de dados!");
-          form.reset();
-          // Repõe o nome do usuário no campo desabilitado
-           const nomeInput = document.getElementById("nome");
-           if(nomeInput) fetch('api/get_session.php').then(r => r.json()).then(user => nomeInput.value = user.nome);
+          alert("✅ Manutenção de Caminhão salva no Banco!");
+          this.reset();
+          location.reload();
         } else {
-          // Mostra o erro que veio do PHP
           alert("Erro: " + data.error);
         }
       })
-      .catch(error => {
-        console.error('Erro na requisição:', error);
-        alert('Ocorreu um erro de conexão.');
-      });
+      .catch(err => alert('Erro de conexão.'));
     });
   </script>
   <br>
