@@ -23,17 +23,51 @@
     const lista = document.getElementById("lista");
 
     function carregar() {
-      lista.innerHTML = "<p>Carregando...</p>";
+      lista.innerHTML = "<p>🔄 Tentando carregar máquinas...</p>";
+
       fetch('api/get_maquinas.php')
-        .then(r => r.json())
-        .then(maquinas => {
+        .then(response => {
+            // Passo 1: Verificar se o arquivo PHP foi encontrado
+            if (!response.ok) {
+                throw new Error("Erro HTTP: " + response.status + " (Arquivo não encontrado ou erro no servidor)");
+            }
+            return response.text(); // Pegamos como texto primeiro para ver o que veio
+        })
+        .then(texto => {
+            console.log("O servidor respondeu:", texto); // Olhe no F12 (Console) se der erro
+
+            // Passo 2: Tentar converter para JSON
+            try {
+                return JSON.parse(texto);
+            } catch (e) {
+                throw new Error("O servidor não enviou um JSON válido. Conteúdo recebido: " + texto);
+            }
+        })
+        .then(dados => {
           lista.innerHTML = "";
-          if (maquinas.error) { alert(maquinas.error); return; }
+
+          // Passo 3: Verificar se o PHP retornou erro de Login/Permissão
+          if (dados.error || dados.success === false) {
+             lista.innerHTML = `<p style="color:red">⚠️ Erro do Sistema: ${dados.error}</p>`;
+             if(dados.error.includes("autenticado") || dados.error.includes("logado")){
+                 alert("Sessão expirada! Faça login novamente.");
+                 window.location.href = 'Login.html';
+             }
+             return;
+          }
+
+          // Passo 4: Verificar se é uma lista válida
+          if (!Array.isArray(dados)) {
+              lista.innerHTML = "<p style='color:red'>⚠️ Formato de dados inválido recebido do servidor.</p>";
+              console.error("Dados recebidos não são array:", dados);
+              return;
+          }
           
-          if (maquinas.length === 0) {
-            lista.innerHTML = "<p>Nenhuma máquina encontrada no banco.</p>";
+          // Passo 5: Mostrar os dados
+          if (dados.length === 0) {
+            lista.innerHTML = "<p>Nenhuma máquina encontrada no banco de dados.</p>";
           } else {
-            maquinas.forEach(m => {
+            dados.forEach(m => {
               const item = document.createElement("div");
               item.classList.add("relatorio-item");
               item.innerHTML = `
@@ -47,11 +81,16 @@
               lista.appendChild(item);
             });
           }
+        })
+        .catch(error => {
+            // Passo 6: Mostrar erro na tela se algo falhar
+            console.error('Erro grave:', error);
+            lista.innerHTML = `<p style='color:red; font-weight:bold'>❌ ERRO: ${error.message}</p>`;
         });
     }
 
-function excluir(id) {
-      if (confirm("Apagar do Banco de Dados?")) {
+    function excluir(id) {
+      if (confirm("Tem certeza que deseja apagar esta máquina?")) {
         fetch('api/delete_maquina.php', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -60,19 +99,18 @@ function excluir(id) {
         .then(r => r.json())
         .then(data => {
           if (data.success) {
-            alert('Máquina apagada!');
+            alert('Máquina apagada com sucesso!');
             carregar();
           } else {
-            alert('Erro: ' + data.error);
+            alert('Erro ao apagar: ' + (data.error || "Erro desconhecido"));
           }
-        });
+        })
+        .catch(e => alert("Erro na conexão: " + e));
       }
     }
 
-    // --- ADICIONE ESTA LINHA ABAIXO ---
+    // Chama a função assim que carrega
     carregar(); 
-    // ----------------------------------
-
 </script>
 </body>
 </html>
