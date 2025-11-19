@@ -64,18 +64,16 @@
     const inputPlaca = document.getElementById("placa");
     const labelPlaca = document.querySelector("label[for='placa']");
 
-    // Função para limpar os erros visuais
     function limparErros() {
-        labelPlaca.style.color = ""; // Remove vermelho
-        inputPlaca.style.borderColor = ""; // Remove borda vermelha
+        labelPlaca.style.color = ""; 
+        inputPlaca.style.borderColor = ""; 
         const msgExistente = document.getElementById("msg-erro-placa");
         if (msgExistente) msgExistente.remove();
     }
 
     form.addEventListener("submit", function (e) {
-      e.preventDefault(); // Não recarrega a página
-      
-      limparErros(); // Limpa erros antigos antes de enviar
+      e.preventDefault(); 
+      limparErros(); 
 
       const formData = new FormData(form);
 
@@ -87,31 +85,27 @@
       .then(data => {
         if (data.success) {
           alert("✅ Caminhão adicionado com sucesso!");
-          form.reset(); // Limpa os campos
+          
+          // --- REDIRECIONAMENTO AQUI ---
+          window.location.href = "painelcam.html"; 
+
         } else {
           
-          // AQUI É O PULO DO GATO: Se o erro for 'duplicate_code', fazemos o visual vermelho
           if (data.error === 'duplicate_code') {
-             
-              // 1. Muda cor da label e do input
               labelPlaca.style.color = "red";
               inputPlaca.style.borderColor = "red";
 
-              // 2. Cria a mensagem de erro
               const smallError = document.createElement("small");
               smallError.id = "msg-erro-placa";
-              smallError.innerText = data.message; // "Placa de caminhão já existe"
+              smallError.innerText = data.message; 
               smallError.style.color = "red";
               smallError.style.display = "block";
               smallError.style.marginTop = "5px";
               smallError.style.fontWeight = "bold";
 
-              // 3. Coloca a mensagem embaixo do input
               inputPlaca.after(smallError);
               inputPlaca.focus();
-
           } else {
-              // Se for outro erro qualquer, mostra o alerta normal
               alert("Erro: " + data.error);
           }
         }
