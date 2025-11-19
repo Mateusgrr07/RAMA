@@ -50,19 +50,30 @@
         });
     }
 
-    function excluir(id) {
+function excluir(id) {
       if (confirm("Apagar do Banco de Dados?")) {
         fetch('api/delete_maquina.php', {
           method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ id: id })
-        }).then(() => {
-            alert('Apagado!');
+        })
+        .then(r => r.json())
+        .then(data => {
+          if (data.success) {
+            alert('Máquina apagada!');
             carregar();
+          } else {
+            alert('Erro: ' + data.error);
+          }
         });
       }
     }
-    carregar();
-  </script>
+
+    // --- ADICIONE ESTA LINHA ABAIXO ---
+    carregar(); 
+    // ----------------------------------
+
+</script>
 </body>
 </html>
 
