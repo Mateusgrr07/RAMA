@@ -36,57 +36,84 @@
   </div>
   <br>
   <br>
-   <footer class="footer">
+  
+  <footer class="footer">
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
   </footer>
 
   <script>
-    // Primeiro, verificamos se o usuário está logado
+    // 1. Verificação de Sessão
     document.addEventListener('DOMContentLoaded', () => {
         fetch('api/get_session.php')
             .then(response => {
-                if (!response.ok) {
-                    // Se a resposta não for OK (ex: 401), o usuário não está logado
-                    throw new Error('Não autenticado');
-                }
+                if (!response.ok) throw new Error('Não autenticado');
                 return response.json();
             })
             .then(user => {
-                if (!user.success) {
-                    throw new Error('Não autenticado');
-                }
-                // Se chegou aqui, o usuário está logado.
+                if (!user.success) throw new Error('Não autenticado');
                 console.log('Usuário logado:', user.nome);
             })
             .catch(error => {
-                // Se der erro, manda para o Login
                 alert('Você precisa estar logado para acessar esta página.');
                 window.location.href = 'Login.html';
             });
     });
 
-    // Agora, o submit do formulário
+    // 2. Lógica do Formulário
     const form = document.getElementById("formCaminhao");
+    const inputPlaca = document.getElementById("placa");
+    const labelPlaca = document.querySelector("label[for='placa']");
+
+    // Função para limpar os erros visuais
+    function limparErros() {
+        labelPlaca.style.color = ""; // Remove vermelho
+        inputPlaca.style.borderColor = ""; // Remove borda vermelha
+        const msgExistente = document.getElementById("msg-erro-placa");
+        if (msgExistente) msgExistente.remove();
+    }
 
     form.addEventListener("submit", function (e) {
-      e.preventDefault(); // Evita o recarregamento da página
+      e.preventDefault(); // Não recarrega a página
+      
+      limparErros(); // Limpa erros antigos antes de enviar
 
-      // Usamos o FormData para pegar todos os campos do formulário
       const formData = new FormData(form);
 
-      // Enviamos os dados para o PHP usando 'fetch'
       fetch('api/add_caminhao.php', {
         method: 'POST',
-        body: formData // Envia os dados do formulário
+        body: formData
       })
-      .then(response => response.json()) // Espera uma resposta JSON
+      .then(response => response.json())
       .then(data => {
         if (data.success) {
-          alert("✅ Caminhão adicionado ao banco de dados!");
-          form.reset();
+          alert("✅ Caminhão adicionado com sucesso!");
+          form.reset(); // Limpa os campos
         } else {
-          // Mostra o erro que veio do PHP
-          alert("Erro: " + data.error);
+          
+          // AQUI É O PULO DO GATO: Se o erro for 'duplicate_code', fazemos o visual vermelho
+          if (data.error === 'duplicate_code') {
+             
+              // 1. Muda cor da label e do input
+              labelPlaca.style.color = "red";
+              inputPlaca.style.borderColor = "red";
+
+              // 2. Cria a mensagem de erro
+              const smallError = document.createElement("small");
+              smallError.id = "msg-erro-placa";
+              smallError.innerText = data.message; // "Placa de caminhão já existe"
+              smallError.style.color = "red";
+              smallError.style.display = "block";
+              smallError.style.marginTop = "5px";
+              smallError.style.fontWeight = "bold";
+
+              // 3. Coloca a mensagem embaixo do input
+              inputPlaca.after(smallError);
+              inputPlaca.focus();
+
+          } else {
+              // Se for outro erro qualquer, mostra o alerta normal
+              alert("Erro: " + data.error);
+          }
         }
       })
       .catch(error => {

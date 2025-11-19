@@ -3,6 +3,7 @@ session_start();
 include 'db.php';
 header('Content-Type: application/json');
 
+// Verificação de segurança básica
 if (!isset($_SESSION['id'])) {
     http_response_code(401);
     echo json_encode(['success' => false, 'error' => 'Não logado']);
@@ -20,6 +21,24 @@ if (empty($codigo) || empty($modelo)) {
     exit();
 }
 
+// --- NOVA PARTE: VERIFICA SE O CÓDIGO JÁ EXISTE ---
+$checkStmt = $conn->prepare("SELECT id FROM maquinas WHERE codigo = ?");
+$checkStmt->bind_param("s", $codigo);
+$checkStmt->execute();
+$checkStmt->store_result();
+
+if ($checkStmt->num_rows > 0) {
+    // Retornamos um erro específico 'duplicate_code' para o JS identificar
+    echo json_encode([
+        'success' => false, 
+        'error' => 'duplicate_code', 
+        'message' => 'Código de máquina já existe'
+    ]);
+    exit();
+}
+$checkStmt->close();
+// --------------------------------------------------
+
 $stmt = $conn->prepare("INSERT INTO maquinas (codigo, modelo, tipo, ano, id_usuario_cadastro) VALUES (?, ?, ?, ?, ?)");
 $stmt->bind_param("ssssi", $codigo, $modelo, $tipo, $ano, $id_usuario);
 
@@ -28,5 +47,7 @@ if ($stmt->execute()) {
 } else {
     echo json_encode(['success' => false, 'error' => $stmt->error]);
 }
+
+$stmt->close();
 $conn->close();
 ?>

@@ -36,47 +36,67 @@
     </form>
   </div>
 <script>
-    // 1. Verifica se está logado
-    document.addEventListener('DOMContentLoaded', () => {
-        fetch('api/get_session.php')
-            .then(response => response.json())
-            .then(user => {
-                if (!user.success) {
-                    alert('Você precisa estar logado.');
-                    window.location.href = 'Login.html';
-                }
-            });
-    });
+const form = document.getElementById("formMaquina");
+const inputCodigo = document.getElementById("codigo");
+const labelCodigo = document.querySelector("label[for='codigo']");
 
-    // 2. Envia para o Banco de Dados
-    const form = document.getElementById("formMaquina");
+// Função para limpar os erros visuais antes de tentar de novo
+function limparErros() {
+    labelCodigo.style.color = ""; // Volta a cor original
+    inputCodigo.style.borderColor = ""; 
+    const msgExistente = document.getElementById("msg-erro-codigo");
+    if (msgExistente) msgExistente.remove();
+}
 
-    form.addEventListener("submit", function(e) {
-      e.preventDefault();
+form.addEventListener("submit", function(e) {
+    e.preventDefault();
+    limparErros(); // Limpa erros anteriores
 
-      const formData = new FormData(form);
+    const formData = new FormData(form);
 
-      fetch('api/add_maquina.php', {
+    fetch('api/add_maquina.php', {
         method: 'POST',
         body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
+    })
+    .then(response => response.json())
+    .then(data => {
         if (data.success) {
-          alert("✅ Máquina salva no Banco de Dados!");
-          form.reset();
+            alert(" Máquina salva com sucesso!");
+            form.reset();
         } else {
-          alert("Erro ao salvar: " + data.error);
+            // VERIFICA SE O ERRO É DE CÓDIGO DUPLICADO
+            if (data.error === 'duplicate_code') {
+                
+                // 1. Pinta a label de vermelho
+                labelCodigo.style.color = "red";
+                inputCodigo.style.borderColor = "red"; // Opcional: pinta a borda do input
+
+                // 2. Cria a mensagem pequena vermelha embaixo
+                const smallError = document.createElement("small");
+                smallError.id = "msg-erro-codigo";
+                smallError.innerText = data.message; // "Código de máquina já existe"
+                smallError.style.color = "red";
+                smallError.style.display = "block"; // Garante que fique na linha de baixo
+                smallError.style.marginTop = "5px";
+
+                // Insere DEPOIS do input de código
+                inputCodigo.after(smallError);
+                
+            } else {
+                // Outros erros genéricos
+                alert("Erro ao salvar: " + data.error);
+            }
         }
-      })
-      .catch(error => {
+    })
+    .catch(error => {
         console.error('Erro:', error);
-        alert('Erro de conexão.');
-      });
+        // Dica importante: Se der erro de JSON aqui, é provável que seu db.php tenha espaços em branco
+        alert('Erro técnico ou de conexão. Verifique o console.');
     });
+});
   </script>
-  <br>
-  <br>
+  <br/>
+  <br/>
   <footer class="footer">
     <img src="IMG/TransgraõsSemfundo.png" alt="TransGrãos" class="footer-logo">
   </footer>
